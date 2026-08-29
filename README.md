@@ -197,7 +197,7 @@ POST /api/doubts/
   <img src="api/docs/quiz1.png" alt="Quiz Generation" width="900">
 </p>
 
-### Quiz Interface
+
 
 <p align="center">
   <img src="api/docs/quiz2.png" alt="Quiz Interface" width="900">
