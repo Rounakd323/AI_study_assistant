@@ -1,8 +1,31 @@
+# Virtual environment
 venv/
+.venv/
+
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+
+# Environment variables / secrets
 .env
 .env.*
+
+# User-uploaded files
 uploads/
+backend/uploads/
+
+# Local databases
 *.db
 *.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
