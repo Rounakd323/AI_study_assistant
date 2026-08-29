@@ -176,3 +176,35 @@ POST /api/doubts/
 - **GPU**: In `services/embeddings.py`, change `"device": "cpu"` → `"device": "cuda"` if you have a GPU.
 - **LLM Model**: In `services/llm.py`, change `model="llama3"` to any Ollama model.
 - **Chunk Size**: Adjust `chunk_size` and `chunk_overlap` in `services/pdf_service.py`.
+
+## Application Screenshots
+
+### Home / Dashboard
+
+<p align="center">
+  <img src="api/docs/image.png" alt="AI Study Assistant Dashboard" width="900">
+</p>
+
+### Doubt Resolution
+
+<p align="center">
+  <img src="api/docs/doubts.png" alt="Doubt Resolution" width="900">
+</p>
+
+### Quiz Generation
+
+<p align="center">
+  <img src="api/docs/quiz1.png" alt="Quiz Generation" width="900">
+</p>
+
+### Quiz Interface
+
+<p align="center">
+  <img src="api/docs/quiz2.png" alt="Quiz Interface" width="900">
+</p>
+
+### Study Mode
+
+<p align="center">
+  <img src="api/docs/studymode.png" alt="Study Mode" width="900">
+</p>
