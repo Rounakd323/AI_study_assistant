@@ -39,7 +39,7 @@ ai-study-assistant/
 ```
 
 ---
-## Architecutre
+## Architecture
                     ┌──────────────────────┐
                     │     Web Frontend     │
                     │      HTML/CSS/JS     │
