@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Study Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+
+  <!-- Background texture -->
+  <div class="bg-noise"></div>
+  <div class="bg-glow"></div>
+
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div>
+          <h1 class="logo-text">Study<br>Assistant</h1>
+          <p class="logo-sub">RAG · Ollama · FAISS</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-tab="upload">
+          <span class="nav-icon">⊕</span> Upload PDF
+        </button>
+        <button class="nav-btn" data-tab="study" id="nav-study" disabled>
+          <span class="nav-icon">◈</span> Study Mode
+        </button>
+        <button class="nav-btn" data-tab="quiz" id="nav-quiz" disabled>
+          <span class="nav-icon">◇</span> Quiz Me
+        </button>
+        <button class="nav-btn" data-tab="doubts" id="nav-doubts" disabled>
+          <span class="nav-icon">◎</span> Ask Doubts
+        </button>
+      </nav>
+
+      <div class="sidebar-status" id="doc-status">
+        <div class="status-dot inactive"></div>
+        <span>No document loaded</span>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- UPLOAD TAB -->
+      <section class="tab-panel active" id="tab-upload">
+        <div class="panel-header">
+          <h2>Upload your PDF</h2>
+          <p>Drop a study material, textbook, or notes PDF to get started.</p>
+        </div>
+
+        <div class="upload-zone" id="drop-zone">
+          <div class="upload-icon">⬆</div>
+          <p class="upload-label">Drag & drop PDF here</p>
+          <p class="upload-sub">or click to browse files</p>
+          <input type="file" id="file-input" accept=".pdf" hidden />
+        </div>
+
+        <div class="upload-progress hidden" id="upload-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <p class="progress-label" id="progress-label">Processing PDF…</p>
+        </div>
+
+        <div class="upload-result hidden" id="upload-result">
+          <div class="result-card">
+            <div class="result-row">
+              <span class="result-key">File</span>
+              <span class="result-val" id="r-filename">—</span>
+            </div>
+            <div class="result-row">
+              <span class="result-key">Pages</span>
+              <span class="result-val" id="r-pages">—</span>
+            </div>
+            <div class="result-row">
+              <span class="result-key">Chunks</span>
+              <span class="result-val" id="r-chunks">—</span>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="switchTab('study')">
+            Start Studying →
+          </button>
+        </div>
+      </section>
+
+      <!-- STUDY TAB -->
+      <section class="tab-panel" id="tab-study">
+        <div class="panel-header">
+          <h2>Study Mode</h2>
+          <p>Enter a topic and get a structured summary from your document.</p>
+        </div>
+
+        <div class="input-row">
+          <input type="text" id="study-topic" class="text-input" placeholder="e.g. Photosynthesis, World War II, Newton's Laws…" />
+          <button class="btn-primary" id="study-btn" onclick="fetchSummary()">Summarise</button>
+        </div>
+
+        <div class="spinner hidden" id="study-spinner">
+          <div class="spin-ring"></div>
+          <span>Generating summary…</span>
+        </div>
+
+        <div class="output-area hidden" id="study-output">
+          <div class="context-toggle">
+            <button class="link-btn" onclick="toggleContext()">▸ View retrieved context</button>
+          </div>
+          <div class="context-box hidden" id="context-box"></div>
+          <div class="summary-box" id="summary-box"></div>
+          <div class="action-bar">
+            <button class="btn-outline" onclick="switchTab('quiz')">Generate Quiz →</button>
+            <button class="btn-outline" onclick="switchTab('doubts')">Ask a Doubt →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUIZ TAB -->
+      <section class="tab-panel" id="tab-quiz">
+        <div class="panel-header">
+          <h2>Quiz Me</h2>
+          <p>Generate 5 questions (3 short answer + 2 MCQ) on any topic.</p>
+        </div>
+
+        <div class="input-row">
+          <input type="text" id="quiz-topic" class="text-input" placeholder="Topic to quiz on…" />
+          <button class="btn-primary" onclick="fetchQuiz()">Generate</button>
+        </div>
+
+        <div class="spinner hidden" id="quiz-spinner">
+          <div class="spin-ring"></div>
+          <span>Generating quiz…</span>
+        </div>
+
+        <div class="output-area hidden" id="quiz-output">
+          <div class="quiz-box" id="quiz-box"></div>
+        </div>
+      </section>
+
+      <!-- DOUBTS TAB -->
+      <section class="tab-panel" id="tab-doubts">
+        <div class="panel-header">
+          <h2>Ask Doubts</h2>
+          <p>Ask any question about your uploaded document.</p>
+        </div>
+
+        <div class="chat-window" id="chat-window">
+          <div class="chat-welcome">
+            <span></span>
+            <p>Your questions will appear here.</p>
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <input type="text" id="doubt-input" class="text-input" placeholder="Type your question…" onkeydown="if(event.key==='Enter') askDoubt()" />
+          <button class="btn-primary" onclick="askDoubt()">Ask</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
